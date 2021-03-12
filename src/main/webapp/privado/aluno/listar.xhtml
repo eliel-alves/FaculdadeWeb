@@ -1,0 +1,124 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <ui:composition template="/templates/template.xhtml">
+        <ui:define name="titulo">Manutenção de Alunos</ui:define>
+        <ui:define name="conteudo">
+            
+            <h:form id="formListagem" prependId="false">
+                <p:growl/>
+                
+                <p:toolbar style="margin: 20px 0;">
+                    <p:toolbarGroup>
+                        <p:commandButton value="Adicionar" 
+                                         actionListener="#{controleAluno.novo()}" 
+                                         icon="pi pi-plus"
+                                         update="formEdicao"
+                                         process="@this"
+                                         oncomplete="PF('dlg').show()"/>
+                    </p:toolbarGroup>
+                </p:toolbar>
+                
+                <p:dataTable value="#{controleAluno.dao.listaObjetos}" var="obj"
+                             id="listagem">
+                    <f:facet name="header" class="p-grid">
+                        <div style="width: 49%; display: inline-block;">
+                            <span style="font-weight: bold; text-transform: uppercase;">Alunos</span>
+                        </div>
+                        <div style="width: 50%; display: inline-block;" align="right">
+                            <p:commandButton id="toggler" type="button" value="Colunas" icon="pi pi-align-justify"/>
+                            <p:columnToggler datasource="listagem" trigger="toggler"/>
+                        </div>
+                    </f:facet>
+                    
+                    <p:column headerText="ID">
+                        <p:outputLabel value="#{obj.id}"/>
+                    </p:column>
+                    
+                    <p:column headerText="Nome">
+                        <p:outputLabel value="#{obj.nome}"/>
+                    </p:column>
+                    
+                    <p:column headerText="Email">
+                        <p:outputLabel value="#{obj.email}"/>
+                    </p:column>
+                    
+                    <p:column headerText="Nascimento">
+                        <p:outputLabel value="#{obj.nascimento}">
+                            <f:convertDateTime pattern="dd/MM/yyyy" />
+                            <f:converter converterId="converterCalendar" />
+                        </p:outputLabel>
+                    </p:column>
+                    
+                    <p:column style="text-align: center;" headerText="Ações">
+                        <div align="center">
+                            <p:commandButton style="margin-right: 5px;" actionListener="#{controleAluno.alterar(obj.id)}"
+                                             icon="pi pi-pencil"
+                                             title="Editar"
+                                             update="formEdicao"
+                                             process="@this"
+                                             styleClass="rounded-button ui-button-success"
+                                             oncomplete="PF('dlg').show()"/>
+                            <p:commandButton actionListener="#{controleAluno.excluir(obj.id)}"
+                                             class="ui-button-danger rounded-button"
+                                             icon="pi pi-trash"
+                                             update="@form"
+                                             process="@this"
+                                             onclick="if(!confirm('Confirma a exclusão?')) return false"/>
+                        </div>
+                    </p:column>
+                </p:dataTable>
+            </h:form>
+            
+            <p:dialog header="Edição" widgetVar="dlg" resizable="false"
+                      modal="true" width="50%" height="100%">
+                <h:form id="formEdicao" prependId="false">
+                    <p:growl/>
+                    <div align="center">
+                        <p:panelGrid columns="2">
+                            
+                            <p:outputLabel value="ID"/>
+                            <p:inputText validator="#{controleAluno.objeto.id}" size="5" readonly="true"/>
+                            
+                            <p:outputLabel value="Nome" for="txtNome"/>
+                            <p:inputText id="txtNome" required="true"
+                                     value="#{controleAluno.objeto.nome}"
+                                     size="35" maxlength="50"
+                                     placeholder="Digite o nome do aluno"/>
+
+                            <p:outputLabel value="Email" for="txtEmail"/>
+                            <p:inputText id="txtEmail" required="true"
+                                     value="#{controleAluno.objeto.email}"
+                                     size="35" maxlength="50"
+                                     placeholder="Digite endereço de email do aluno"/>
+
+                            <p:outputLabel value="Nascimento" for="txtNascimento"/>
+                            <p:calendar required="true" id="txtNascimento" value="#{controleAluno.objeto.nascimento}"
+                                        mask="true" pattern="dd/MM/yyyy" navigator="true" size="10" placeholder="00/00/0000">
+                                <f:converter converterId="converterCalendar"/>
+                            </p:calendar>
+                            
+                        </p:panelGrid>
+                    </div>
+                    <p:panel>
+                        <div align="center">
+                            <p:commandButton style="margin-right: 10px;" value="Salvar" icon="pi pi-save"
+                                             actionListener="#{controleAluno.salvar()}"
+                                             update="formEdicao formListagem"
+                                             oncomplete="if(!args.validationFailed){PF('dlg').hide();}"/>
+                            <p:commandButton value="Cancelar" icon="pi pi-times" onclick="PF('dlg').hide()"
+                                             class="ui-button-secondary" update="formEdicao" process="@this">
+                                <p:resetInput target="formEdicao"/>
+                            </p:commandButton>
+                        </div>
+                    </p:panel>
+                </h:form>
+            </p:dialog>
+        </ui:define>
+    </ui:composition>
+</html>
+
