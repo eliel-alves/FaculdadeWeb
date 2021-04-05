@@ -13,5 +13,9 @@ body {
 }
 
 .ui-menu.ui-megamenu .ui-menu-child .ui-menu-list {
-    width: 230px !important;
+    width: 250px !important;
+}
+
+div.ui-selectonemenu{
+  margin-right: 15px;
 }

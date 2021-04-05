@@ -8,10 +8,10 @@
     <ui:composition template="/templates/template.xhtml">
         <ui:define name="titulo">Manutenção de Especialidades</ui:define>
         <ui:define name="conteudo">
-            
+
             <h:form id="formListagem" prependId="false">
                 <p:growl/>
-                
+
                 <p:toolbar style="margin: 20px 0;">
                     <p:toolbarGroup>
                         <p:commandButton value="Adicionar" 
@@ -21,8 +21,54 @@
                                          process="@this"
                                          oncomplete="PF('dlg').show()"/>
                     </p:toolbarGroup>
+
+                    <p:toolbarGroup align="right">
+                        <p:selectOneMenu id="txtOrdem" value="#{controleEspecialidade.dao.ordemAtual}"
+                                         converter="#{controleEspecialidade.dao.converterOrdem}">
+                            <f:selectItems value="#{controleEspecialidade.dao.listaOrdem}" var="ord"
+                                           itemValue="#{ord.atributo}"/>
+                            <p:ajax update="listagem"/>
+                        </p:selectOneMenu>
+                        <span class="filter-container ui-input-icon-left">
+                            <i class="pi pi-search"></i>
+                            <p:inputText id="txtFiltro"
+                                         value="#{controleEspecialidade.dao.filtro}"
+                                         placeholder="Buscar...">
+                                <p:ajax event="input" update="listagem"/>
+                            </p:inputText>
+                        </span>
+                        
+                        <p:divider layout="vertical" />
+                        
+                        <p:selectOneMenu id="txtMaxObj" value="#{controleEspecialidade.dao.maximoObjetos}">
+                            <f:selectItem itemValue="3" itemLabel="3"/>
+                            <f:selectItem itemValue="5" itemLabel="5"/>
+                            <f:selectItem itemValue="10" itemLabel="10"/>
+                            <f:selectItem itemValue="20" itemLabel="20"/>
+                            <f:selectItem itemValue="50" itemLabel="50"/>
+                            <p:ajax update="listagem"/>
+                        </p:selectOneMenu>
+                        <p:commandButton action="#{controleEspecialidade.dao.primeiro()}"
+                                         title="Primeiro" update="listagem"
+                                         icon="pi pi-step-backward"
+                                         style="margin-right: 10px;"/>
+
+                        <p:commandButton action="#{controleEspecialidade.dao.anterior()}"
+                                         title="Anterior" update="listagem"
+                                         icon="pi pi-chevron-left"
+                                         style="margin-right: 10px;"/>
+
+                        <p:commandButton action="#{controleEspecialidade.dao.proximo()}"
+                                         title="Próximo" update="listagem"
+                                         icon="pi pi-chevron-right"
+                                         style="margin-right: 10px;"/>
+
+                        <p:commandButton action="#{controleEspecialidade.dao.ultimo()}"
+                                         title="Último" update="listagem"
+                                         icon="pi pi-step-forward"/>
+                    </p:toolbarGroup>
                 </p:toolbar>
-                
+
                 <p:dataTable value="#{controleEspecialidade.dao.listaObjetos}" var="obj"
                              id="listagem">
                     <f:facet name="header" class="p-grid">
@@ -34,14 +80,18 @@
                             <p:columnToggler datasource="listagem" trigger="toggler"/>
                         </div>
                     </f:facet>
+                    <f:facet name="footer">
+                        <p:outputLabel style="text-align: center;"
+                                       value="#{controleEspecialidade.dao.mensagemNavegacao()}"/>
+                    </f:facet>
                     <p:column headerText="ID">
                         <p:outputLabel value="#{obj.id}"/>
                     </p:column>
-                    
+
                     <p:column headerText="Nome">
                         <p:outputLabel value="#{obj.nome}"/>
                     </p:column>
-                    
+
                     <p:column style="text-align: center;" headerText="Ações">
                         <div align="center">
                             <p:commandButton style="margin-right: 5px;" actionListener="#{controleEspecialidade.alterar(obj.id)}"
@@ -56,12 +106,13 @@
                                              icon="pi pi-trash"
                                              update="@form"
                                              process="@this"
-                                             onclick="if(!confirm('Confirma a exclusão?')) return false"/>
+                                             onclick="if (!confirm('Confirma a exclusão?'))
+                                                         return false"/>
                         </div>
                     </p:column>
                 </p:dataTable>
             </h:form>
-            
+
             <p:dialog header="Edição" widgetVar="dlg" resizable="false"
                       modal="true" width="50%" height="100%">
                 <h:form id="formEdicao" prependId="false">
@@ -70,16 +121,16 @@
                         <p:panelGrid columns="2">
                             <p:outputLabel value="ID"/>
                             <p:inputText validator="#{controleEspecialidade.objeto.id}" size="5" readonly="true"/>
-                            
+
                             <p:outputLabel value="Nome" for="txtNome"/>
                             <p:inputText id="txtNome" required="true"
                                          value="#{controleEspecialidade.objeto.nome}"
                                          size="50" maxlength="50"
                                          placeholder="Digite aqui o nome da Especialidade"/>
-                            
+
                         </p:panelGrid>
                     </div>
-                   <p:panel>
+                    <p:panel>
                         <div align="center">
                             <p:commandButton style="margin-right: 10px;" value="Salvar" icon="pi pi-save"
                                              actionListener="#{controleEspecialidade.salvar()}"
