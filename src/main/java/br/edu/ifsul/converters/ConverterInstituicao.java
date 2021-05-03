@@ -5,7 +5,7 @@
  */
 package br.edu.ifsul.converters;
 
-import br.edu.ifsul.modelo.Especialidade;
+import br.edu.ifsul.modelo.Instituicao;
 import java.io.Serializable;
 import javax.enterprise.context.RequestScoped;
 import javax.faces.component.UIComponent;
@@ -19,9 +19,9 @@ import javax.persistence.PersistenceContext;
  *
  * @author eliel
  */
-@Named(value = "converterEspecialidade")
+@Named(value = "converterInstituicao")
 @RequestScoped
-public class ConverterEspecialidade implements Serializable, Converter<Object> {
+public class ConverterInstituicao implements Serializable, Converter<Object> {
 
     @PersistenceContext(unitName = "FaculdadeWebPU")
     protected EntityManager em;
@@ -32,7 +32,7 @@ public class ConverterEspecialidade implements Serializable, Converter<Object> {
         if(string == null || string.equals("Selecione um registro")) {
             return null;
         }
-        return em.find(Especialidade.class, Integer.parseInt(string));
+        return em.find(Instituicao.class, Integer.parseInt(string));
     }
 
     // converte do objeto para a tela
@@ -41,7 +41,7 @@ public class ConverterEspecialidade implements Serializable, Converter<Object> {
         if(t == null)
             return null;
         
-        Especialidade obj = (Especialidade) t;
+        Instituicao obj = (Instituicao) t;
         return obj.getId().toString();
     }
     

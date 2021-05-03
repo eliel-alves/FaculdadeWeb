@@ -1,0 +1,154 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+    <p:dialog header="Edição" widgetVar="dlg" resizable="false"
+              modal="true" width="40%" height="100%">
+        <h:form id="formEdicao" prependId="false">
+            <p:growl id="growl"/>
+            <p:outputPanel class="ui-fluid">
+                <p:tabView id="tab" activeIndex="#{controleUsuario.tabAtiva}">
+                    <p:tab title="Dados Principais">
+                        <div class="p-formgroup p-grid">
+                            <div class="p-field p-col-4">
+                                <p:outputLabel value="Nome de Usuário" for="txtNomeUsuario"/>
+                                <p:inputText id="txtNomeUsuario" required="true"
+                                             value="#{controleUsuario.objeto.nomeUsuario}"
+                                             maxlength="20" readonly="#{!controleUsuario.novoUsuario}"
+                                             placeholder="Informe o nome de usuário">
+                                    <p:ajax process="@this" update="growl @this" event="blur"
+                                            listener="#{controleUsuario.verificaExistenciaUsuario()}"/>
+                                </p:inputText>
+                            </div>
+
+                            <div class="p-field p-col-8">
+                                <p:outputLabel value="Nome" for="txtNome"/>
+                                <p:inputText id="txtNome" required="true"
+                                             value="#{controleUsuario.objeto.nome}"
+                                             maxlength="50"
+                                             placeholder="Informe o nome"/>
+                            </div>
+
+                            <div class="p-field p-col-12">
+                                <p:outputLabel value="Email" for="txtEmail"/>
+                                <p:inputText id="txtEmail" required="true"
+                                             value="#{controleUsuario.objeto.email}"
+                                             maxlength="50"
+                                             placeholder="Digite o endereço de email"/>
+                            </div>
+
+
+                            <div class="p-field p-col-5">
+                                <p:outputLabel value="Senha" for="txtSenha"/>
+                                <p:password id="txtSenha"
+                                            value="#{controleUsuario.objeto.senha}"
+                                            toggleMask="true" class="txtpass"
+                                            redisplay="true" required="true"
+                                            match="txtRepetirSenha"
+                                            placeholder="Sua senha"
+                                            feedback="true" weakLabel="Senha Fraca"
+                                            strongLabel="Senha Forte" goodLabel="Senha Boa"  
+                                            validatorMessage="As senhas não se coincidem."
+                                            promptLabel="Insira uma senha"/>
+                            </div>
+
+                            <div class="p-field p-col-5">
+                                <p:outputLabel value="Repetir Senha" for="txtRepetirSenha"/>
+                                <p:password id="txtRepetirSenha"
+                                            value="#{controleUsuario.objeto.senha}"
+                                            toggleMask="true" class="txtpass"
+                                            redisplay="true" required="true"
+                                            placeholder="Sua senha novamente"/>
+                            </div>
+
+                            <div class="p-field p-col-2">
+                                <p:outputLabel value="Ativo" for="boolAtivo"/>
+                                <p:selectBooleanButton id="boolAtivo" onLabel="Sim" 
+                                                       offLabel="Não" onIcon="pi pi-check"
+                                                       offIcon="pi pi-times"
+                                                       value="#{controleUsuario.objeto.ativo}"/>
+                            </div>
+                        </div>
+                    </p:tab>
+
+                    <p:tab title="Permissões">
+                        <div class="p-formgroup-inline">
+                            <div class="p-field">
+                                <p:selectOneMenu value="#{controleUsuario.permissao}"
+                                                 id="selectPermissao">
+                                    <f:selectItem noSelectionOption="true" itemLabel="Selecione um registro"/>
+                                    <f:converter binding="#{converterPermissao}"/>
+                                    <f:selectItems value="#{controleUsuario.daoPermissao.listaTodos}" var="per"
+                                                   itemLabel="#{per.nome}"/>
+                                </p:selectOneMenu>
+                            </div>
+                            <div class="p-field">
+                                <p:commandButton value="Adicionar"
+                                                 actionListener="#{controleUsuario.salvarPermissao()}"
+                                                 update="listaPermissoes growl"
+                                                 id="btnAdicionarPermissao"
+                                                 process="btnAdicionarPermissao selectPermissao"
+                                                 icon="pi pi-plus"/>
+
+                            </div>
+                        </div>
+
+                        <p:dataTable value="#{controleUsuario.objeto.permissoes}"
+                                     var="permissao"
+                                     id="listaPermissoes">
+                            <p:column headerText="Nome">
+                                <p:outputLabel value="#{permissao.nome}"/>
+                            </p:column>
+
+                            <p:column headerText="Descrição">
+                                <p:outputLabel value="#{permissao.descricao}"/>
+                            </p:column>
+
+                            <p:column style="text-align: center;"
+                                      headerText="Ações"
+                                      rendered="#{p:ifGranted('REMOVER')}">
+                                <div align="center">
+                                    <p:commandButton actionListener="#{controleUsuario.excluirPermissao(permissao)}"
+                                                     icon="pi pi-trash"
+                                                     update="tab:listaPermissoes growl"
+                                                     class="ui-button-danger rounded-button"
+                                                     process="@this"
+                                                     onclick="if (!confirm('Confirma a exclusão'))
+                                                                 return false"/>
+                                </div>
+                            </p:column>
+                        </p:dataTable>
+                    </p:tab>
+                </p:tabView>
+
+                <p:toolbar>
+                    <p:toolbarGroup>
+                    </p:toolbarGroup>
+
+                    <p:toolbarGroup align="right">
+                        <div class="p-formgroup-inline">
+                            <div class="p-field p-mb-0">
+                                <p:commandButton value="Salvar" icon="pi pi-save"
+                                                 actionListener="#{controleUsuario.salvar()}"
+                                                 update="formEdicao formListagem"
+                                                 oncomplete="if(!args.validationFailed){PF('dlg').hide();}"/>
+                            </div>
+
+                            <div class="p-field p-mb-0 p-mr-0">
+                                <p:commandButton value="Cancelar" icon="pi pi-times" onclick="PF('dlg').hide()"
+                                                 class="ui-button-secondary" update="formEdicao" process="@this">
+                                    <p:resetInput target="formEdicao"/>
+                                </p:commandButton>
+                            </div>
+                        </div>
+                    </p:toolbarGroup>
+                </p:toolbar>
+
+            </p:outputPanel>
+        </h:form>
+    </p:dialog>
+</html>
+

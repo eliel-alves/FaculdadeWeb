@@ -16,6 +16,75 @@ body {
     width: 250px !important;
 }
 
+body .ui-tabs .ui-tabs-panels .ui-tabs-panel {
+    padding: 1rem 0;
+}
+
 div.ui-selectonemenu{
   margin-right: 15px;
+}
+
+.ui-datatable-scrollable-body {
+    width: 100.2%;
+}
+
+.txtpass {
+    width: 100% !important;
+}
+
+.cardLogin {
+  text-align: center;
+  box-shadow: 0 10px 30px -7px rgba(40, 59, 77, .2) !important;
+}
+
+.ui-card-content {
+    padding-bottom: 0 !important;
+}
+
+/* USER MENU */
+.userMenu {
+    margin: -4px 0;
+}
+
+.userMenu .ui-avatar {
+  transform: translateY(5px);
+  margin-right: 5px;;
+}
+
+.userInfo {
+    display: inline-block;
+}
+
+.userInfo span {
+    display: block;
+    transform: translateY(5px);
+}
+
+.userMenu .ui-divider-vertical {
+    margin: 0 10px !important;
+    transform: translateY(-7px);
+}
+
+.userMenu .btnLogout {
+    transform: translateY(-6px);
+}
+
+/* SCROLL BAR */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #33455d;
+  border-radius: 4px;
+}
+ 
+::-webkit-scrollbar-thumb {
+  background: #90caf8;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #0084ff;
 }

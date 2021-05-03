@@ -8,20 +8,26 @@
     <ui:composition template="/templates/template.xhtml">
         <ui:define name="titulo">Manutenção de Professores</ui:define>
         <ui:define name="conteudo">
-            
+
             <h:form id="formListagem" prependId="false">
                 <p:growl/>
-                
+
                 <p:toolbar style="margin: 20px 0;">
                     <p:toolbarGroup>
-                        <p:commandButton value="Adicionar" 
+                        <p:commandButton value="Adicionar"
+                                         rendered="#{p:ifGranted('ADICIONAR')}"
                                          actionListener="#{controleProfessor.novo()}" 
-                                         icon="pi pi-plus"
+                                         icon="pi pi-plus" class="p-mr-3"
                                          update="formEdicao"
-                                         process="@this"
+                                         process="@this" 
                                          oncomplete="PF('dlg').show()"/>
+                        <p:commandButton value="Imprimir"
+                                         icon="pi pi-print" styleClass="ui-button-help"
+                                         action="#{controleProfessor.imprimeProfessores()}"
+                                         ajax="false"
+                                         onclick="this.form.target = '_blank'"/>
                     </p:toolbarGroup>
-                    
+
                     <p:toolbarGroup align="right">
                         <p:selectOneMenu id="txtOrdem" value="#{controleProfessor.dao.ordemAtual}"
                                          converter="#{controleProfessor.dao.converterOrdem}">
@@ -37,9 +43,9 @@
                                 <p:ajax event="input" update="listagem"/>
                             </p:inputText>
                         </span>
-                        
+
                         <p:divider layout="vertical" />
-                        
+
                         <p:selectOneMenu id="txtMaxObj" value="#{controleProfessor.dao.maximoObjetos}">
                             <f:selectItem itemValue="3" itemLabel="3"/>
                             <f:selectItem itemValue="5" itemLabel="5"/>
@@ -50,25 +56,25 @@
                         </p:selectOneMenu>
                         <p:commandButton action="#{controleProfessor.dao.primeiro()}"
                                          title="Primeiro" update="listagem"
-                                         icon="pi pi-step-backward"
-                                         style="margin-right: 10px;"/>
+                                         icon="pi pi-step-backward" 
+                                         styleClass="ui-button-secondary p-mr-2"/>
 
                         <p:commandButton action="#{controleProfessor.dao.anterior()}"
                                          title="Anterior" update="listagem"
                                          icon="pi pi-chevron-left"
-                                         style="margin-right: 10px;"/>
+                                         styleClass="ui-button-secondary p-mr-2"/>
 
                         <p:commandButton action="#{controleProfessor.dao.proximo()}"
                                          title="Próximo" update="listagem"
                                          icon="pi pi-chevron-right"
-                                         style="margin-right: 10px;"/>
+                                         styleClass="ui-button-secondary p-mr-2"/>
 
                         <p:commandButton action="#{controleProfessor.dao.ultimo()}"
                                          title="Último" update="listagem"
-                                         icon="pi pi-step-forward"/>
+                                         icon="pi pi-step-forward" styleClass="ui-button-secondary"/>
                     </p:toolbarGroup>
                 </p:toolbar>
-                
+
                 <p:dataTable value="#{controleProfessor.dao.listaObjetos}" var="obj"
                              id="listagem">
                     <f:facet name="header" class="p-grid">
@@ -84,123 +90,142 @@
                         <p:outputLabel style="text-align: center;"
                                        value="#{controleProfessor.dao.mensagemNavegacao()}"/>
                     </f:facet>
-                    
+
                     <p:column headerText="ID">
                         <p:outputLabel value="#{obj.id}"/>
                     </p:column>
-                    
+
                     <p:column headerText="Nome">
                         <p:outputLabel value="#{obj.nome}"/>
                     </p:column>
-                    
+
                     <p:column headerText="Email">
                         <p:outputLabel value="#{obj.email}"/>
                     </p:column>
-                    
+
                     <p:column headerText="Nascimento">
                         <p:outputLabel value="#{obj.nascimento}">
                             <f:convertDateTime pattern="dd/MM/yyyy" />
                             <f:converter converterId="converterCalendar" />
                         </p:outputLabel>
                     </p:column>
-                    
+
                     <p:column headerText="Titulação">
                         <p:outputLabel value="#{obj.titulacao}"/>
-                    </p:column>
-                    
-                    <p:column headerText="Tópicos de Interesse">
-                        <p:outputLabel value="#{obj.topicosInteresse}"/>
-                    </p:column>                    
-                    
+                    </p:column>                  
+
                     <p:column headerText="Especialidade">
                         <p:outputLabel value="#{obj.especialidade.nome}"/>
                     </p:column>
-                    
-                    <p:column style="text-align: center;" headerText="Ações">
+
+                    <p:column style="text-align: center;" headerText="Ações"
+                              rendered="#{p:ifGranted('REMOVER') or p:ifGranted('ALTERAR')}">
                         <div align="center">
-                            <p:commandButton style="margin-right: 5px;" actionListener="#{controleProfessor.alterar(obj.id)}"
+                            <p:commandButton actionListener="#{controleProfessor.alterar(obj.id)}"
                                              icon="pi pi-pencil"
                                              title="Editar"
                                              update="formEdicao"
+                                             rendered="#{p:ifGranted('ALTERAR')}"
                                              process="@this"
-                                             styleClass="rounded-button ui-button-success"
+                                             styleClass="rounded-button ui-button-success p-mr-2"
                                              oncomplete="PF('dlg').show()"/>
                             <p:commandButton actionListener="#{controleProfessor.excluir(obj.id)}"
                                              class="ui-button-danger rounded-button"
                                              icon="pi pi-trash"
                                              update="@form"
                                              process="@this"
-                                             onclick="if(!confirm('Confirma a exclusão?')) return false"/>
+                                             rendered="#{p:ifGranted('REMOVER')}"
+                                             onclick="if (!confirm('Confirma a exclusão?'))
+                                                         return false"/>
                         </div>
                     </p:column>
                 </p:dataTable>
             </h:form>
-            
+
             <p:dialog header="Edição" widgetVar="dlg" resizable="false"
-                      modal="true" width="50%" height="100%">
+                      modal="true" width="30%" height="100%">
                 <h:form id="formEdicao" prependId="false">
                     <p:growl/>
-                    <div align="center">
-                        <p:panelGrid columns="2">
-                            
-                            <p:outputLabel value="ID"/>
-                            <p:inputText validator="#{controleProfessor.objeto.id}" size="5" readonly="true"/>
-                            
-                            <p:outputLabel value="Nome" for="txtNome"/>
-                            <p:inputText id="txtNome" required="true"
-                                     value="#{controleProfessor.objeto.nome}"
-                                     size="35" maxlength="50"
-                                     placeholder="Digite o nome do professor"/>
 
-                            <p:outputLabel value="Email" for="txtEmail"/>
-                            <p:inputText id="txtEmail" required="true"
-                                     value="#{controleProfessor.objeto.email}"
-                                     size="35" maxlength="50"
-                                     placeholder="Digite o endereço de email do professor"/>
+                    <p:outputPanel class="ui-fluid">
+                        <p:tabView id="tab" activeIndex="#{controleProfessor.tabAtiva}">
+                            <p:tab title="Dados Principais">
+                                <div class="p-formgroup p-grid">
+                                    <div class="p-field p-col-8">
+                                        <p:outputLabel value="Nome" for="txtNome"/>
+                                        <p:inputText id="txtNome" required="true"
+                                                     value="#{controleProfessor.objeto.nome}"
+                                                     maxlength="50"
+                                                     placeholder="Digite o nome do professor"/>
+                                    </div>
+                                    <div class="p-field p-col-4">
+                                        <p:outputLabel value="Nascimento" for="txtNascimento"/>
+                                        <p:calendar required="true" id="txtNascimento"
+                                                    value="#{controleProfessor.objeto.nascimento}"
+                                                    mask="true" pattern="dd/MM/yyyy" navigator="true"
+                                                    placeholder="00/00/0000">
+                                            <f:converter converterId="converterCalendar"/>
+                                        </p:calendar>
+                                    </div>
+                                    <div class="p-field p-col-12">
+                                        <p:outputLabel value="Email" for="txtEmail"/>
+                                        <p:inputText id="txtEmail" required="true"
+                                                     value="#{controleProfessor.objeto.email}"
+                                                     maxlength="50"
+                                                     placeholder="Digite o endereço de email do professor"/>
+                                    </div>
+                                    <div class="p-field p-col-5">
+                                        <p:outputLabel value="Titulação" for="txtTitulacao"/>
+                                        <p:inputText id="txtTitulacao" required="true"
+                                                     value="#{controleProfessor.objeto.titulacao}"
+                                                     maxlength="50"
+                                                     placeholder="Ex: Mestrado"/>
+                                    </div>
+                                    <div class="p-field p-col-7">
+                                        <p:outputLabel value="Especialidade" for="selectEspecialidade"/>
+                                        <p:selectOneMenu value="#{controleProfessor.objeto.especialidade}"
+                                                         id="selectEspecialidade"
+                                                         filter="true"
+                                                         filterMatchMode="startsWith">
+                                            <f:selectItem noSelectionOption="true" itemLabel="Selecione um registro"/>
+                                            <f:converter binding="#{converterEspecialidade}"/>
+                                            <f:selectItems value="#{controleProfessor.daoEspecialidade.listaTodos}"
+                                                           var="esp" itemLabel="#{esp.nome}" />
+                                        </p:selectOneMenu>
+                                    </div>
+                                </div>
+                            </p:tab>
+                            <p:tab title="Tópicos de Interesse">
+                                <p:textEditor value="#{controleProfessor.objeto.topicosInteresse}"
+                                              secure="false" height="200"/>
+                            </p:tab>
+                        </p:tabView>
 
-                            <p:outputLabel value="Nascimento" for="txtNascimento"/>
-                            <p:calendar required="true" id="txtNascimento" value="#{controleProfessor.objeto.nascimento}"
-                                        mask="true" pattern="dd/MM/yyyy" navigator="true" size="10"  placeholder="00/00/0000">
-                                <f:converter converterId="converterCalendar"/>
-                            </p:calendar>
+                        <p:toolbar>
+                            <p:toolbarGroup>
+                                <p:outputLabel class="p-pr-2" value="ID: "
+                                               rendered="#{controleProfessor.objeto.id != null}"/>
+                                <p:badge value="#{controleProfessor.objeto.id}"
+                                         rendered="#{controleProfessor.objeto.id != null}"
+                                         styleClass="p-mr-2"></p:badge>
+                            </p:toolbarGroup>
 
-                            <p:outputLabel value="Titulação" for="txtTitulacao"/>
-                            <p:inputText id="txtTitulacao" required="true"
-                                     value="#{controleProfessor.objeto.titulacao}"
-                                     size="35" maxlength="50"
-                                     placeholder="Digite a titulação do professor"/>
-                                
-                            <p:outputLabel value="Tópicos de Interesse" for="txtTopicoInteresse"/>
-                            <p:inputTextarea id="txtTopicoInteresse"
-                                             value="#{controleProfessor.objeto.topicosInteresse}"
-                                             rows="3" cols="37"
-                                             placeholder="Quais são os tópicos de interesse do professor?"/>
-                            
-                            <p:outputLabel value="Especialidade" for="selectEspecialidade"/>
-                            <p:selectOneMenu value="#{controleProfessor.objeto.especialidade}"
-                                             id="selectEspecialidade"
-                                             filter="true"
-                                             filterMatchMode="startsWith">
-                                <f:selectItem noSelectionOption="true" itemLabel="Selecone um registro"/>
-                                <f:converter binding="#{converterEspecialidade}"/>
-                                <f:selectItems value="#{controleProfessor.daoEspecialidade.listaTodos}"
-                                               var="esp" itemLabel="#{esp.nome}" />
-                            </p:selectOneMenu>
-                            
-                        </p:panelGrid>
-                    </div>
-                    <p:panel>
-                        <div align="center">
-                            <p:commandButton style="margin-right: 10px;" value="Salvar" icon="pi pi-save"
-                                             actionListener="#{controleProfessor.salvar()}"
-                                             update="formEdicao formListagem"
-                                             oncomplete="if(!args.validationFailed){PF('dlg').hide();}"/>
-                            <p:commandButton value="Cancelar" icon="pi pi-times" onclick="PF('dlg').hide()"
-                                             class="ui-button-secondary" update="formEdicao" process="@this">
-                                <p:resetInput target="formEdicao"/>
-                            </p:commandButton>
-                        </div>
-                    </p:panel>
+                            <p:toolbarGroup align="right">
+                                <div class="p-formgroup-inline">
+                                    <p:commandButton value="Salvar" icon="pi pi-save"
+                                                     actionListener="#{controleProfessor.salvar()}"
+                                                     update="formEdicao formListagem"
+                                                     oncomplete="if(!args.validationFailed){PF('dlg').hide();}"/>
+                                </div>
+                                <div class="p-field p-mb-0 p-mr-0">
+                                    <p:commandButton value="Cancelar" icon="pi pi-times" onclick="PF('dlg').hide()"
+                                                     class="ui-button-secondary" update="formEdicao" process="@this">
+                                        <p:resetInput target="formEdicao"/>
+                                    </p:commandButton>
+                                </div>
+                            </p:toolbarGroup>
+                        </p:toolbar>
+                    </p:outputPanel>
                 </h:form>
             </p:dialog>
         </ui:define>

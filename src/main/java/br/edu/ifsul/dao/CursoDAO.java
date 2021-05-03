@@ -6,7 +6,8 @@
 package br.edu.ifsul.dao;
 
 import br.edu.ifsul.converters.ConverterOrdem;
-import br.edu.ifsul.modelo.Aluno;
+import br.edu.ifsul.modelo.Curso;
+import br.edu.ifsul.modelo.Disciplina;
 import java.io.Serializable;
 import javax.ejb.Stateful;
 
@@ -15,17 +16,16 @@ import javax.ejb.Stateful;
  * @author eliel
  */
 @Stateful
-public class AlunoDAO<TIPO> extends DAOGenerico<Aluno> implements Serializable{
+public class CursoDAO<TIPO> extends DAOGenerico<Curso> implements Serializable{
     
-    public AlunoDAO(){
+    public CursoDAO(){
         super();
-        classePersistente = Aluno.class;
+        classePersistente = Curso.class;
         
         // definir as ordens possíveis
         listaOrdem.add(new Ordem("id", "ID", "="));
         listaOrdem.add(new Ordem("nome", "Nome", "like"));
-        listaOrdem.add(new Ordem("email", "E-mail", "like"));
-        listaOrdem.add(new Ordem("nascimento", "Nascimento", "="));
+        listaOrdem.add(new Ordem("instituicao.nome", "Instituição", "like"));
         
         // definir a ordem inicial
         ordemAtual = listaOrdem.get(1);
@@ -33,6 +33,20 @@ public class AlunoDAO<TIPO> extends DAOGenerico<Aluno> implements Serializable{
         //inicializa o conversor das ordens
         converterOrdem = new ConverterOrdem();
         converterOrdem.setListaOrdem(listaOrdem);
+    }
+    
+    @Override
+    public Curso getObjectByID(Object id) throws Exception {
+        Curso obj = em.find(Curso.class, id);
+        
+        // uso para evitar o erro de lazy inicialization exception
+        obj.getDisciplinas().size();
+        
+        obj.getDisciplinas().forEach(dis -> {
+            dis.getAlunos().size();
+        });
+        
+        return obj;
     }
     
 }

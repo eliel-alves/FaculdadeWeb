@@ -6,7 +6,7 @@
       xmlns:p="http://primefaces.org/ui"
       xmlns:f="http://xmlns.jcp.org/jsf/core">
     <ui:composition template="/templates/template.xhtml">
-        <ui:define name="titulo">Manutenção de Especialidades</ui:define>
+        <ui:define name="titulo">Manutenção de Usuários</ui:define>
         <ui:define name="conteudo">
 
             <h:form id="formListagem" prependId="false">
@@ -16,7 +16,7 @@
                     <p:toolbarGroup>
                         <p:commandButton value="Adicionar"
                                          rendered="#{p:ifGranted('ADICIONAR')}"
-                                         actionListener="#{controleEspecialidade.novo()}" 
+                                         actionListener="#{controleUsuario.novo()}" 
                                          icon="pi pi-plus"
                                          update="formEdicao"
                                          process="@this"
@@ -24,16 +24,16 @@
                     </p:toolbarGroup>
 
                     <p:toolbarGroup align="right">
-                        <p:selectOneMenu id="txtOrdem" value="#{controleEspecialidade.dao.ordemAtual}"
-                                         converter="#{controleEspecialidade.dao.converterOrdem}">
-                            <f:selectItems value="#{controleEspecialidade.dao.listaOrdem}" var="ord"
+                        <p:selectOneMenu id="txtOrdem" value="#{controleUsuario.dao.ordemAtual}"
+                                         converter="#{controleUsuario.dao.converterOrdem}">
+                            <f:selectItems value="#{controleUsuario.dao.listaOrdem}" var="ord"
                                            itemValue="#{ord.atributo}"/>
                             <p:ajax update="listagem"/>
                         </p:selectOneMenu>
                         <span class="filter-container ui-input-icon-left">
                             <i class="pi pi-search"></i>
                             <p:inputText id="txtFiltro"
-                                         value="#{controleEspecialidade.dao.filtro}"
+                                         value="#{controleUsuario.dao.filtro}"
                                          placeholder="Buscar...">
                                 <p:ajax event="input" update="listagem"/>
                             </p:inputText>
@@ -41,7 +41,7 @@
 
                         <p:divider layout="vertical" />
 
-                        <p:selectOneMenu id="txtMaxObj" value="#{controleEspecialidade.dao.maximoObjetos}">
+                        <p:selectOneMenu id="txtMaxObj" value="#{controleUsuario.dao.maximoObjetos}">
                             <f:selectItem itemValue="3" itemLabel="3"/>
                             <f:selectItem itemValue="5" itemLabel="5"/>
                             <f:selectItem itemValue="10" itemLabel="10"/>
@@ -49,33 +49,33 @@
                             <f:selectItem itemValue="50" itemLabel="50"/>
                             <p:ajax update="listagem"/>
                         </p:selectOneMenu>
-                        <p:commandButton action="#{controleEspecialidade.dao.primeiro()}"
+                        <p:commandButton action="#{controleUsuario.dao.primeiro()}"
                                          title="Primeiro" update="listagem"
                                          icon="pi pi-step-backward"
                                          styleClass="ui-button-secondary p-mr-2"/>
 
-                        <p:commandButton action="#{controleEspecialidade.dao.anterior()}"
+                        <p:commandButton action="#{controleUsuario.dao.anterior()}"
                                          title="Anterior" update="listagem"
                                          icon="pi pi-chevron-left"
                                          styleClass="ui-button-secondary p-mr-2"/>
 
-                        <p:commandButton action="#{controleEspecialidade.dao.proximo()}"
+                        <p:commandButton action="#{controleUsuario.dao.proximo()}"
                                          title="Próximo" update="listagem"
                                          icon="pi pi-chevron-right"
                                          styleClass="ui-button-secondary p-mr-2"/>
 
-                        <p:commandButton action="#{controleEspecialidade.dao.ultimo()}"
+                        <p:commandButton action="#{controleUsuario.dao.ultimo()}"
                                          title="Último" update="listagem"
                                          icon="pi pi-step-forward"
                                          styleClass="ui-button-secondary"/>
                     </p:toolbarGroup>
                 </p:toolbar>
 
-                <p:dataTable value="#{controleEspecialidade.dao.listaObjetos}" var="obj"
+                <p:dataTable value="#{controleUsuario.dao.listaObjetos}" var="obj"
                              id="listagem">
                     <f:facet name="header" class="p-grid">
                         <div style="width: 49%; display: inline-block;">
-                            <span style="font-weight: bold; text-transform: uppercase;">Especialidades</span>
+                            <span style="font-weight: bold; text-transform: uppercase;">Usuários</span>
                         </div>
                         <div style="width: 50%; display: inline-block;" align="right">
                             <p:commandButton id="toggler" type="button" value="Colunas" icon="pi pi-align-justify"/>
@@ -83,21 +83,44 @@
                         </div>
                     </f:facet>
                     <f:facet name="footer">
-                        <p:outputLabel style="text-align: center;"
-                                       value="#{controleEspecialidade.dao.mensagemNavegacao()}"/>
+                        <p:outputLabel value="#{controleUsuario.dao.mensagemNavegacao()}"/>
                     </f:facet>
-                    <p:column headerText="ID">
-                        <p:outputLabel value="#{obj.id}"/>
-                    </p:column>
 
+                    <p:column headerText="Nome de Usuário">
+                        <p:outputLabel value="#{obj.nomeUsuario}"/>
+                    </p:column>
+                    
                     <p:column headerText="Nome">
                         <p:outputLabel value="#{obj.nome}"/>
+                    </p:column>
+                    
+                    <p:column headerText="E-mail">
+                        <p:outputLabel value="#{obj.email}"/>
+                    </p:column>
+
+                    <p:column headerText="Data Cadastro">
+                        <p:outputLabel value="#{obj.dataCadastro}">
+                            <f:converter converterId="converterCalendar"/>
+                        </p:outputLabel>
+                    </p:column>
+                    
+                    <p:column headerText="Ativo">
+                        
+                        <p:outputLabel rendered="#{obj.ativo}">
+                            <i style="color: #4caf50;"
+                               class="pi pi-circle-on"></i>
+                        </p:outputLabel>
+                        
+                        <p:outputLabel rendered="#{!obj.ativo}">
+                            <i style="color: #ec3237;"
+                               class="pi pi-circle-off"></i>
+                        </p:outputLabel>
                     </p:column>
 
                     <p:column style="text-align: center;" headerText="Ações"
                               rendered="#{p:ifGranted('REMOVER') or p:ifGranted('ALTERAR')}">
                         <div align="center">
-                            <p:commandButton actionListener="#{controleEspecialidade.alterar(obj.id)}"
+                            <p:commandButton actionListener="#{controleUsuario.alterar(obj.nomeUsuario)}"
                                              icon="pi pi-pencil"
                                              title="Editar"
                                              update="formEdicao"
@@ -105,64 +128,20 @@
                                              process="@this"
                                              styleClass="rounded-button ui-button-success p-mr-2"
                                              oncomplete="PF('dlg').show()"/>
-                            <p:commandButton actionListener="#{controleEspecialidade.excluir(obj.id)}"
-                                             class="ui-button-danger rounded-button"
+                            <p:commandButton actionListener="#{controleUsuario.excluir(obj.nomeUsuario)}"
                                              icon="pi pi-trash"
-                                             update="@form"
                                              rendered="#{p:ifGranted('REMOVER')}"
+                                             class="ui-button-danger rounded-button"
+                                             update="@form"
                                              process="@this"
-                                             onclick="if (!confirm('Confirma a exclusão?'))
+                                             onclick="if (!confirm('Confirma a exclusão'))
                                                          return false"/>
                         </div>
                     </p:column>
                 </p:dataTable>
             </h:form>
-
-            <p:dialog header="Edição" widgetVar="dlg" resizable="false"
-                      modal="true" width="30%" height="100%">
-                <h:form id="formEdicao" prependId="false">
-                    <p:growl/>
-
-                    <p:outputPanel class="ui-fluid">
-                        <div class="p-formgroup p-grid">
-                            <div class="p-field p-col">
-                                <p:outputLabel value="Nome" for="txtNome"/>
-                                <p:inputText id="txtNome" required="true"
-                                             value="#{controleEspecialidade.objeto.nome}"
-                                             maxlength="50"
-                                             placeholder="Digite aqui o nome da Especialidade"/>
-                            </div>
-                        </div>
-
-                        <p:toolbar>
-                            <p:toolbarGroup>
-                                <p:outputLabel class="p-pr-2" value="ID: "
-                                               rendered="#{controleEspecialidade.objeto.id != null}"/>
-                                <p:badge value="#{controleEspecialidade.objeto.id}"
-                                         rendered="#{controleEspecialidade.objeto.id != null}"
-                                         styleClass="p-mr-2"></p:badge>
-                            </p:toolbarGroup>
-
-                            <p:toolbarGroup align="right">
-                                <div class="p-formgroup-inline">
-                                    <div class="p-field p-mb-0">
-                                        <p:commandButton value="Salvar" icon="pi pi-save"
-                                                         actionListener="#{controleEspecialidade.salvar()}"
-                                                         update="formEdicao formListagem"
-                                                         oncomplete="if(!args.validationFailed){PF('dlg').hide();}"/>
-                                    </div>
-                                    <div class="p-field p-mb-0 p-mr-0">
-                                        <p:commandButton value="Cancelar" icon="pi pi-times" onclick="PF('dlg').hide()"
-                                                         class="ui-button-secondary" update="formEdicao" process="@this">
-                                            <p:resetInput target="formEdicao"/>
-                                        </p:commandButton>
-                                    </div>
-                                </div>
-                            </p:toolbarGroup>
-                        </p:toolbar>
-                    </p:outputPanel>
-                </h:form>
-            </p:dialog>
+            <ui:include src="formulario.xhtml"/>
+            
         </ui:define>
     </ui:composition>
 </html>

@@ -5,12 +5,16 @@
  */
 package br.edu.ifsul.controle;
 
+import br.edu.ifsul.dao.DisciplinaDAO;
 import br.edu.ifsul.dao.ProfessorDAO;
 import br.edu.ifsul.dao.EspecialidadeDAO;
+import br.edu.ifsul.modelo.Disciplina;
 import br.edu.ifsul.modelo.Professor;
 import br.edu.ifsul.modelo.Especialidade;
 import br.edu.ifsul.util.Util;
+import br.edu.ifsul.util.UtilRelatorios;
 import java.io.Serializable;
+import java.util.HashMap;
 import javax.ejb.EJB;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
@@ -28,9 +32,17 @@ public class ControleProfessor implements Serializable {
     private Professor objeto;
     @EJB
     private EspecialidadeDAO<Especialidade> daoEspecialidade;
+    @EJB
+    private DisciplinaDAO<Disciplina> daoDisciplina;
+    private Integer tabAtiva;
     
     public ControleProfessor(){
         
+    }
+    
+    public void imprimeProfessores(){
+        HashMap parametros = new HashMap();
+        UtilRelatorios.imprimeRelatorio("relatorioProfessores", parametros, dao.getListaTodos());
     }
     
     public String listar(){
@@ -38,10 +50,12 @@ public class ControleProfessor implements Serializable {
     }
     
     public void novo(){
+        tabAtiva = 0;
         setObjeto(new Professor());
     }
     
     public void alterar(Object id){
+        tabAtiva = 0;
         try {
             setObjeto(getDao().getObjectByID(id));
         } catch (Exception e) {
@@ -94,6 +108,22 @@ public class ControleProfessor implements Serializable {
 
     public void setDaoEspecialidade(EspecialidadeDAO<Especialidade> daoEspecialidade) {
         this.daoEspecialidade = daoEspecialidade;
+    }
+
+    public Integer getTabAtiva() {
+        return tabAtiva;
+    }
+
+    public void setTabAtiva(Integer tabAtiva) {
+        this.tabAtiva = tabAtiva;
+    }
+
+    public DisciplinaDAO<Disciplina> getDaoDisciplina() {
+        return daoDisciplina;
+    }
+
+    public void setDaoDisciplina(DisciplinaDAO<Disciplina> daoDisciplina) {
+        this.daoDisciplina = daoDisciplina;
     }
     
 }

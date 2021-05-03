@@ -3,17 +3,20 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
       xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-      xmlns:p="http://primefaces.org/ui">
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
     <h:head>
         <title><ui:insert name="titulo"></ui:insert></title>
         <h:outputStylesheet library="css" name="estilos.css"/>
+        <h:outputStylesheet library="css" name="primeflex.css"/>
         <h:outputScript library="js" name="scripts.js"/>
     </h:head>
     <h:body>
         <h:form id="formMenu" prependId="false">
             <p:megaMenu>
                 <p:menuitem value="Home" url="#{facesContext.externalContext.requestContextPath}/index.xhtml" icon="pi pi-home"/>
-                <p:submenu label="Cadastros" icon="pi pi-plus-circle">
+                <p:submenu label="Cadastros" icon="pi pi-plus-circle"
+                           rendered="#{controleLogin.usuarioAutenticado != null and p:ifGranted('ACESSAR')}">
                     <p:column>
                         <p:submenu label="Básicos">
                             <p:menuitem action="#{controleEspecialidade.listar()}" value="Manutenção de Especialidades" ajax="false" icon="pi pi-bookmark"/>
@@ -21,8 +24,63 @@
                             <p:menuitem action="#{controleAluno.listar()}" value="Manutenção de Alunos" ajax="false" icon="pi pi-id-card"/>
                             <p:menuitem action="#{controleInstituicao.listar()}" value="Manutenção de Instituições" ajax="false" icon="pi pi-info-circle"/>
                         </p:submenu>
+                        <p:submenu label="Avançados">
+                            <p:menuitem action="#{controleCurso.listar()}" value="Manutenção de Cursos" ajax="false" icon="pi pi-folder"/>
+                            <p:menuitem action="#{controleDisciplina.listar()}" value="Manutenção de Disciplinas" ajax="false" icon="pi pi-book"/>
+                        </p:submenu>
+                        <p:submenu label="Outros">
+                            <p:menuitem action="#{controleUsuario.listar()}" value="Manutenção de Usuários" ajax="false" icon="pi pi-user"/>
+                            <p:menuitem action="#{controlePermissao.listar()}" value="Manutenção de Permissões" ajax="false" icon="pi pi-shield"/>
+                        </p:submenu>
                     </p:column>
                 </p:submenu>
+                
+                <p:submenu label="Relatórios" icon="pi pi-file-pdf"
+                           rendered="#{controleLogin.usuarioAutenticado != null}">
+                    <p:column>
+                        <p:submenu label="Básicos">
+                            <p:menuitem action="#{controleProfessor.imprimeProfessores()}"
+                                        value="Relatório de Professores"
+                                        icon="pi pi-print"
+                                        ajax="false"
+                                        target="_blank"/>
+                        </p:submenu>
+                    </p:column>
+                </p:submenu>
+                
+                <f:facet name="options">
+                    <p:commandButton rendered="#{controleLogin.usuarioAutenticado == null}"
+                                     action="#{controleLogin.irPaginaLogin()}"
+                                     value="Login" icon="pi pi-sign-in" ajax="false"/>
+
+                    <p:outputPanel class="userMenu" rendered="#{controleLogin.usuarioAutenticado != null}">
+                        <p:avatar gravatar="#{controleLogin.usuarioAutenticado.email}"
+                                  gravatarConfig="d=mp"
+                                  styleClass="p-ml-3"
+                                  shape="circle"
+                                  rendered="#{controleLogin.usuarioAutenticado != null}"/>
+                        
+                        <div class="userInfo">
+                            <span>
+                                <i class="pi pi-user p-mr-2" style="color: #76889c"></i>
+                                <p:outputLabel style="font-weight: bold;"
+                                               class="userName"
+                                           styleClass="p-mr-2" value="#{controleLogin.usuarioAutenticado.nome}"/>
+                                <p:outputLabel style="color: #2196f3;" value="@#{controleLogin.usuarioAutenticado.nomeUsuario}"/>
+                            </span>
+                            <span>
+                                <i class="pi pi-envelope p-mr-2" style="color: #76889c"></i>
+                                <p:outputLabel style="color: #76889c" value="#{controleLogin.usuarioAutenticado.email}"/>
+                            </span>
+                        </div>
+                        
+                        <p:divider layout="vertical"/>
+                        <p:commandButton class="btnLogout p-mt-0" action="#{controleLogin.logout()}"
+                                         value="Logout"
+                                         icon="pi pi-sign-out"
+                                         ajax="false"/>
+                    </p:outputPanel>
+                </f:facet>
             </p:megaMenu>
         </h:form>
         

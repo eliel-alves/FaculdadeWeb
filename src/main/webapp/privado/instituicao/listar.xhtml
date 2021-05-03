@@ -8,20 +8,21 @@
     <ui:composition template="/templates/template.xhtml">
         <ui:define name="titulo">Manutenção de Instituições</ui:define>
         <ui:define name="conteudo">
-            
+
             <h:form id="formListagem" prependId="false">
                 <p:growl/>
-                
+
                 <p:toolbar style="margin: 20px 0;">
                     <p:toolbarGroup>
-                        <p:commandButton value="Adicionar" 
+                        <p:commandButton value="Adicionar"
+                                         rendered="#{p:ifGranted('ADICIONAR')}"
                                          actionListener="#{controleInstituicao.novo()}" 
                                          icon="pi pi-plus"
                                          update="formEdicao"
                                          process="@this"
                                          oncomplete="PF('dlg').show()"/>
                     </p:toolbarGroup>
-                    
+
                     <p:toolbarGroup align="right">
                         <p:selectOneMenu id="txtOrdem" value="#{controleInstituicao.dao.ordemAtual}"
                                          converter="#{controleInstituicao.dao.converterOrdem}">
@@ -37,9 +38,9 @@
                                 <p:ajax event="input" update="listagem"/>
                             </p:inputText>
                         </span>
-                        
+
                         <p:divider layout="vertical" />
-                        
+
                         <p:selectOneMenu id="txtMaxObj" value="#{controleInstituicao.dao.maximoObjetos}">
                             <f:selectItem itemValue="3" itemLabel="3"/>
                             <f:selectItem itemValue="5" itemLabel="5"/>
@@ -51,24 +52,25 @@
                         <p:commandButton action="#{controleInstituicao.dao.primeiro()}"
                                          title="Primeiro" update="listagem"
                                          icon="pi pi-step-backward"
-                                         style="margin-right: 10px;"/>
+                                         styleClass="ui-button-secondary p-mr-2"/>
 
                         <p:commandButton action="#{controleInstituicao.dao.anterior()}"
                                          title="Anterior" update="listagem"
                                          icon="pi pi-chevron-left"
-                                         style="margin-right: 10px;"/>
+                                         styleClass="ui-button-secondary p-mr-2"/>
 
                         <p:commandButton action="#{controleInstituicao.dao.proximo()}"
                                          title="Próximo" update="listagem"
                                          icon="pi pi-chevron-right"
-                                         style="margin-right: 10px;"/>
+                                         styleClass="ui-button-secondary p-mr-2"/>
 
                         <p:commandButton action="#{controleInstituicao.dao.ultimo()}"
                                          title="Último" update="listagem"
-                                         icon="pi pi-step-forward"/>
+                                         icon="pi pi-step-forward"
+                                         styleClass="ui-button-secondary"/>
                     </p:toolbarGroup>
                 </p:toolbar>
-                
+
                 <p:dataTable value="#{controleInstituicao.dao.listaObjetos}" var="obj"
                              id="listagem">
                     <f:facet name="header" class="p-grid">
@@ -84,78 +86,94 @@
                         <p:outputLabel style="text-align: center;"
                                        value="#{controleInstituicao.dao.mensagemNavegacao()}"/>
                     </f:facet>
-                    
+
                     <p:column headerText="ID">
                         <p:outputLabel value="#{obj.id}"/>
                     </p:column>
-                    
+
                     <p:column headerText="Nome">
                         <p:outputLabel value="#{obj.nome}"/>
                     </p:column>
-                    
+
                     <p:column headerText="Ano de Fundação">
                         <p:outputLabel value="#{obj.anoFundacao}">
                             <f:convertDateTime pattern="yyyy" />
                             <f:converter converterId="converterCalendarAno" />
                         </p:outputLabel>
                     </p:column>
-                    
-                    <p:column style="text-align: center;" headerText="Ações">
+
+                    <p:column style="text-align: center;" headerText="Ações"
+                              rendered="#{p:ifGranted('REMOVER') or p:ifGranted('ALTERAR')}">
                         <div align="center">
-                            <p:commandButton style="margin-right: 5px;" actionListener="#{controleInstituicao.alterar(obj.id)}"
+                            <p:commandButton actionListener="#{controleInstituicao.alterar(obj.id)}"
                                              icon="pi pi-pencil"
                                              title="Editar"
                                              update="formEdicao"
+                                             rendered="#{p:ifGranted('ALTERAR')}"
                                              process="@this"
-                                             styleClass="rounded-button ui-button-success"
+                                             styleClass="rounded-button ui-button-success p-mr-2"
                                              oncomplete="PF('dlg').show()"/>
                             <p:commandButton actionListener="#{controleInstituicao.excluir(obj.id)}"
                                              class="ui-button-danger rounded-button"
                                              icon="pi pi-trash"
                                              update="@form"
+                                             rendered="#{p:ifGranted('REMOVER')}"
                                              process="@this"
-                                             onclick="if(!confirm('Confirma a exclusão?')) return false"/>
+                                             onclick="if (!confirm('Confirma a exclusão?'))
+                                                         return false"/>
                         </div>
                     </p:column>
                 </p:dataTable>
             </h:form>
-            
+
             <p:dialog header="Edição" widgetVar="dlg" resizable="false"
-                      modal="true" width="50%" height="100%">
+                      modal="true" width="30%" height="100%">
                 <h:form id="formEdicao" prependId="false">
                     <p:growl/>
-                    <div align="center">
-                        <p:panelGrid columns="2">
-                            
-                            <p:outputLabel value="ID"/>
-                            <p:inputText validator="#{controleInstituicao.objeto.id}" size="5" readonly="true"/>
-                            
-                            <p:outputLabel value="Nome" for="txtNome"/>
-                            <p:inputText id="txtNome" required="true"
-                                     value="#{controleInstituicao.objeto.nome}"
-                                     size="35" maxlength="50"
-                                     placeholder="Digite o nome da Instituição"/>
-                            
-                            <p:outputLabel value="Data Fundação" for="txtFundacao"/>
-                            <p:calendar required="true" id="txtFundacao" value="#{controleInstituicao.objeto.anoFundacao}"
-                                        mask="true" pattern="dd/MM/yyyy" navigator="true" size="10" placeholder="00/00/0000">
-                                <f:converter converterId="converterCalendar"/>
-                            </p:calendar>
-                            
-                        </p:panelGrid>
-                    </div>
-                    <p:panel>
-                        <div align="center">
-                            <p:commandButton style="margin-right: 10px;" value="Salvar" icon="pi pi-save"
-                                             actionListener="#{controleInstituicao.salvar()}"
-                                             update="formEdicao formListagem"
-                                             oncomplete="if(!args.validationFailed){PF('dlg').hide();}"/>
-                            <p:commandButton value="Cancelar" icon="pi pi-times" onclick="PF('dlg').hide()"
-                                             class="ui-button-secondary" update="formEdicao" process="@this">
-                                <p:resetInput target="formEdicao"/>
-                            </p:commandButton>
+
+                    <p:outputPanel class="ui-fluid">
+                        <div class="p-formgroup p-grid">
+                            <div class="p-field p-col-8">
+
+                                <p:outputLabel value="Nome" for="txtNome"/>
+                                <p:inputText id="txtNome" required="true"
+                                             value="#{controleInstituicao.objeto.nome}"
+                                             maxlength="50"
+                                             placeholder="Digite o nome da Instituição"/>
+                            </div>
+                            <div class="p-field p-col-4">
+                                <p:outputLabel value="Data Fundação" for="txtFundacao"/>
+                                <p:calendar required="true" id="txtFundacao" value="#{controleInstituicao.objeto.anoFundacao}"
+                                            mask="true" pattern="dd/MM/yyyy" navigator="true" size="10" placeholder="00/00/0000">
+                                    <f:converter converterId="converterCalendar"/>
+                                </p:calendar>
+                            </div>
                         </div>
-                    </p:panel>
+                        <p:toolbar>
+                            <p:toolbarGroup>
+                                <p:outputLabel class="p-pr-2" value="ID: "
+                                               rendered="#{controleInstituicao.objeto.id != null}"/>
+                                <p:badge value="#{controleInstituicao.objeto.id}"
+                                         rendered="#{controleInstituicao.objeto.id != null}"
+                                         styleClass="p-mr-2"></p:badge>
+                            </p:toolbarGroup>
+
+                            <p:toolbarGroup align="right">
+                                <div class="p-formgroup-inline">
+                                    <p:commandButton style="margin-right: 10px;" value="Salvar" icon="pi pi-save"
+                                                     actionListener="#{controleInstituicao.salvar()}"
+                                                     update="formEdicao formListagem"
+                                                     oncomplete="if(!args.validationFailed){PF('dlg').hide();}"/>
+                                </div>
+                                <div class="p-field p-mb-0 p-mr-0">
+                                    <p:commandButton value="Cancelar" icon="pi pi-times" onclick="PF('dlg').hide()"
+                                                     class="ui-button-secondary" update="formEdicao" process="@this">
+                                        <p:resetInput target="formEdicao"/>
+                                    </p:commandButton>
+                                </div>
+                            </p:toolbarGroup>
+                        </p:toolbar>
+                    </p:outputPanel>
                 </h:form>
             </p:dialog>
         </ui:define>

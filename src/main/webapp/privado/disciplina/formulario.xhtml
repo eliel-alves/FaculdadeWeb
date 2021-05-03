@@ -1,0 +1,122 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+    <p:dialog header="Edição" widgetVar="dlg" resizable="false"
+              modal="true" width="43%" height="100%">
+        <h:form id="formEdicao" prependId="false">
+            <p:growl id="growl"/>
+            <p:outputPanel class="ui-fluid">
+                <p:tabView id="tab" activeIndex="#{controleDisciplina.tabAtiva}">
+                    <p:tab title="Dados Principais">
+                        <div class="p-formgroup p-grid">
+                            <div class="p-field p-col-9">
+                                <p:outputLabel value="Nome" for="txtNomeDisciplina"/>
+                                <p:inputText id="txtNomeDisciplina"
+                                             value="#{controleDisciplina.objeto.nome}"
+                                             placeholder="Nome da Disciplina"
+                                             maxlength="50"/>
+                            </div>
+
+                            <div class="p-field p-col-3">
+                                <p:outputLabel value="Carga Horária" for="txtCargaHoraria"/>
+                                <p:inputNumber id="txtCargaHoraria" value="#{controleDisciplina.objeto.cargaHoraria}"
+                                               thousandSeparator="" decimalSeparator="." decimalPlaces="2"/>
+                            </div>
+                        </div>
+                    </p:tab>
+                    <p:tab title="Descrição">
+                        <p:textEditor value="#{controleDisciplina.objeto.descricao}"
+                                      secure="false" height="100"/>
+                    </p:tab>
+                    <p:tab title="Conhecimentos Mínimos">
+                        <p:textEditor value="#{controleDisciplina.objeto.conhecimentosMinimos}"
+                                      secure="false" height="100"/>
+                    </p:tab>
+
+                    <p:tab title="Alunos">
+                        <div class="p-formgroup-inline">
+                            <div class="p-field" width="300px">
+                                <p:selectOneMenu value="#{controleDisciplina.aluno}"
+                                                 id="selectAluno" >
+                                    <f:selectItem noSelectionOption="true" itemLabel="Selecione um registro" />
+                                    <f:converter binding="#{converterAluno}"/>
+                                    <f:selectItems value="#{controleDisciplina.daoAluno.listaTodos}" var="alu"
+                                                   itemLabel="#{alu.nome}"/>
+                                </p:selectOneMenu>
+                            </div>
+                            <div class="p-field">
+                                <p:commandButton value="Adicionar"
+                                                 actionListener="#{controleDisciplina.salvarAluno()}"
+                                                 update="listaAlunos growl"
+                                                 id="btnAdicionarAluno"
+                                                 process="btnAdicionarAluno selectAluno"
+                                                 icon="pi pi-plus"/>
+
+                            </div>
+                        </div>
+
+                        <p:dataTable value="#{controleDisciplina.objeto.alunos}"
+                                     var="aluno"
+                                     id="listaAlunos">
+                            <p:column headerText="ID">
+                                <p:outputLabel value="#{aluno.id}"/>
+                            </p:column>
+
+                            <p:column headerText="Nome">
+                                <p:outputLabel value="#{aluno.nome}"/>
+                            </p:column>
+
+                            <p:column headerText="Email">
+                                <p:outputLabel value="#{aluno.email}"/>
+                            </p:column>
+
+                            <p:column style="text-align: center;" headerText="Ações">
+                                <div align="center">
+                                    <p:commandButton actionListener="#{controleDisciplina.excluirAluno(aluno)}"
+                                                     icon="pi pi-trash"
+                                                     update="tab:listaAlunos growl"
+                                                     rendered="#{p:ifGranted('REMOVER')}"
+                                                     class="ui-button-danger rounded-button"
+                                                     process="@this"
+                                                     onclick="if (!confirm('Confirma a exclusão'))
+                                                                 return false"/>
+                                </div>
+                            </p:column>
+                        </p:dataTable>
+                    </p:tab>
+                </p:tabView>
+
+                <p:toolbar>
+                    <p:toolbarGroup>
+                        <p:outputLabel class="p-pr-2" value="ID: "/>
+                        <p:badge value="#{controleDisciplina.objeto.id}"
+                                 rendered="#{controleDisciplina.objeto.id != null}"
+                                 styleClass="p-mr-2"></p:badge>
+                    </p:toolbarGroup>
+
+                    <p:toolbarGroup align="right">
+                        <div class="p-formgroup-inline">
+                            <div class="p-field p-mb-0">
+                                <p:commandButton value="Salvar" icon="pi pi-save"
+                                                 actionListener="#{controleDisciplina.salvar()}"
+                                                 update="formEdicao formListagem"
+                                                 oncomplete="if(!args.validationFailed){PF('dlg').hide();}"/>
+                            </div>
+                            <div class="p-field p-mb-0 p-mr-0">
+                                <p:commandButton value="Cancelar" icon="pi pi-times" onclick="PF('dlg').hide()"
+                                                 class="ui-button-secondary" update="formEdicao" process="@this">
+                                    <p:resetInput target="formEdicao"/>
+                                </p:commandButton>
+                            </div>
+                        </div>
+                    </p:toolbarGroup>
+                </p:toolbar>
+            </p:outputPanel>
+        </h:form>
+    </p:dialog>
+</html>
+

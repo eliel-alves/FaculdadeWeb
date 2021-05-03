@@ -10,6 +10,8 @@
     <class>br.edu.ifsul.modelo.Instituicao</class>
     <class>br.edu.ifsul.modelo.Nota</class>
     <class>br.edu.ifsul.modelo.Professor</class>
+    <class>br.edu.ifsul.modelo.Permissao</class>
+    <class>br.edu.ifsul.modelo.Usuario</class>
     <properties>
       <property name="hibernate.hbm2ddl.auto" value="update"/>
       <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect"/>

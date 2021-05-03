@@ -6,7 +6,7 @@
 package br.edu.ifsul.dao;
 
 import br.edu.ifsul.converters.ConverterOrdem;
-import br.edu.ifsul.modelo.Aluno;
+import br.edu.ifsul.modelo.Permissao;
 import java.io.Serializable;
 import javax.ejb.Stateful;
 
@@ -15,20 +15,17 @@ import javax.ejb.Stateful;
  * @author eliel
  */
 @Stateful
-public class AlunoDAO<TIPO> extends DAOGenerico<Aluno> implements Serializable{
+public class PermissaoDAO<TIPO> extends DAOGenerico<Permissao> implements Serializable{
     
-    public AlunoDAO(){
+    public PermissaoDAO(){
         super();
-        classePersistente = Aluno.class;
+        classePersistente = Permissao.class;
         
         // definir as ordens possíveis
-        listaOrdem.add(new Ordem("id", "ID", "="));
         listaOrdem.add(new Ordem("nome", "Nome", "like"));
-        listaOrdem.add(new Ordem("email", "E-mail", "like"));
-        listaOrdem.add(new Ordem("nascimento", "Nascimento", "="));
         
         // definir a ordem inicial
-        ordemAtual = listaOrdem.get(1);
+        ordemAtual = listaOrdem.get(0);
         
         //inicializa o conversor das ordens
         converterOrdem = new ConverterOrdem();
