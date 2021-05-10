@@ -9,6 +9,7 @@ import br.edu.ifsul.dao.PermissaoDAO;
 import br.edu.ifsul.modelo.Permissao;
 import br.edu.ifsul.util.Util;
 import java.io.Serializable;
+import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
@@ -30,6 +31,7 @@ public class ControlePermissao implements Serializable {
         
     }
     
+    @RolesAllowed("ACESSAR")
     public String listar(){
         novoObjeto = false;
         return "/privado/permissao/listar?faces-redirect=true";

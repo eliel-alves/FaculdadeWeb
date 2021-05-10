@@ -10,7 +10,9 @@ import br.edu.ifsul.dao.EspecialidadeDAO;
 import br.edu.ifsul.modelo.Aluno;
 import br.edu.ifsul.modelo.Especialidade;
 import br.edu.ifsul.util.Util;
+import br.edu.ifsul.util.UtilRelatorios;
 import java.io.Serializable;
+import java.util.HashMap;
 import javax.ejb.EJB;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
@@ -29,6 +31,11 @@ public class ControleAluno implements Serializable {
     
     public ControleAluno(){
         
+    }
+    
+    public void imprimeAlunos(){
+        HashMap parametros = new HashMap();
+        UtilRelatorios.imprimeRelatorio("relatorioAlunos", parametros, dao.getListaTodos());
     }
     
     public String listar(){

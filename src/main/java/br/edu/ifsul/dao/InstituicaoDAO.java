@@ -26,7 +26,6 @@ public class InstituicaoDAO<TIPO> extends DAOGenerico<Instituicao> implements Se
         // definir as ordens possíveis
         listaOrdem.add(new Ordem("id", "ID", "="));
         listaOrdem.add(new Ordem("nome", "Nome", "like"));
-        listaOrdem.add(new Ordem("anoFundacao", "Fundação", "like"));
         
         // definir a ordem inicial
         ordemAtual = listaOrdem.get(1);

@@ -25,7 +25,6 @@ public class AlunoDAO<TIPO> extends DAOGenerico<Aluno> implements Serializable{
         listaOrdem.add(new Ordem("id", "ID", "="));
         listaOrdem.add(new Ordem("nome", "Nome", "like"));
         listaOrdem.add(new Ordem("email", "E-mail", "like"));
-        listaOrdem.add(new Ordem("nascimento", "Nascimento", "="));
         
         // definir a ordem inicial
         ordemAtual = listaOrdem.get(1);

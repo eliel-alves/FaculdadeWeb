@@ -17,10 +17,15 @@
                         <p:commandButton value="Adicionar"
                                          rendered="#{p:ifGranted('ADICIONAR')}"
                                          actionListener="#{controleAluno.novo()}" 
-                                         icon="pi pi-plus"
+                                         icon="pi pi-plus" class="p-mr-3"
                                          update="formEdicao"
                                          process="@this"
                                          oncomplete="PF('dlg').show()"/>
+                        <p:commandButton value="Imprimir"
+                                         icon="pi pi-print" styleClass="ui-button-help"
+                                         action="#{controleAluno.imprimeAlunos()}"
+                                         ajax="false"
+                                         onclick="this.form.target = '_blank'"/>
                     </p:toolbarGroup>
 
                     <p:toolbarGroup align="right">
@@ -35,7 +40,7 @@
                             <p:inputText id="txtFiltro"
                                          value="#{controleAluno.dao.filtro}"
                                          placeholder="Buscar...">
-                                <p:ajax event="blur" update="listagem"/>
+                                <p:ajax event="input" update="listagem"/>
                             </p:inputText>
                         </span>
 

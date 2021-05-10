@@ -36,6 +36,7 @@ public class DAOGenerico<TIPO> implements Serializable {
 
     }
 
+    @RolesAllowed("ACESSAR")
     public List<TIPO> getListaObjetos() {
         String jpql = "from " + classePersistente.getSimpleName();
         String where = "";
@@ -105,6 +106,7 @@ public class DAOGenerico<TIPO> implements Serializable {
         }
     }
     
+    @RolesAllowed("ACESSAR")
     public List<TIPO> getListaTodos() {
         String jpql = "from " + classePersistente.getSimpleName() +
                 " order by " + ordemAtual.getAtributo();
