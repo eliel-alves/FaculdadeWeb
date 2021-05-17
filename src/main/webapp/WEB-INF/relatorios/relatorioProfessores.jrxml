@@ -3,8 +3,8 @@
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="relatorioProfessores" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="15615d35-67f6-4ba4-a697-974d135fadc7">
 	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="DadosProfessores.xml"/>
 	<style name="zebra" mode="Opaque" backcolor="#1E2D40">
-		<box>
-			<pen lineWidth="0.25" lineColor="#2196F3"/>
+		<box topPadding="0" leftPadding="0" bottomPadding="0" rightPadding="0">
+			<pen lineWidth="0.0" lineColor="#1E2D40"/>
 		</box>
 		<conditionalStyle>
 			<conditionExpression><![CDATA[new Boolean($V{REPORT_COUNT}.intValue() % 2 == 0)]]></conditionExpression>
@@ -129,12 +129,14 @@
 		</band>
 	</columnHeader>
 	<detail>
-		<band height="110" splitType="Stretch">
+		<band height="108" splitType="Stretch">
 			<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.FreeLayout"/>
 			<rectangle>
-				<reportElement style="zebra" positionType="Float" stretchType="ElementGroupHeight" x="0" y="0" width="555" height="110" uuid="a75380e4-2cca-4edf-bc32-120063fbf49a"/>
+				<reportElement style="zebra" positionType="Float" x="0" y="0" width="555" height="108" backcolor="#1E2D40" uuid="a75380e4-2cca-4edf-bc32-120063fbf49a">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
 				<graphicElement>
-					<pen lineWidth="0.25" lineStyle="Solid" lineColor="#2196F3"/>
+					<pen lineWidth="0.0" lineStyle="Solid" lineColor="#1E2D40"/>
 				</graphicElement>
 			</rectangle>
 			<textField>

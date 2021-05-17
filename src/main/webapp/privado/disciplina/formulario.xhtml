@@ -44,7 +44,7 @@
                                                  id="selectAluno" >
                                     <f:selectItem noSelectionOption="true" itemLabel="Selecione um registro" />
                                     <f:converter binding="#{converterAluno}"/>
-                                    <f:selectItems value="#{controleDisciplina.daoAluno.listaTodos}" var="alu"
+                                    <f:selectItems value="#{controleDisciplina.daoAluno.listaTodos}" var="alu" 
                                                    itemLabel="#{alu.nome}"/>
                                 </p:selectOneMenu>
                             </div>

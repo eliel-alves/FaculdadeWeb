@@ -130,13 +130,18 @@
                                              styleClass="rounded-button ui-button-success p-mr-2"
                                              oncomplete="PF('dlg').show()"/>
                             <p:commandButton actionListener="#{controleProfessor.excluir(obj.id)}"
-                                             class="ui-button-danger rounded-button"
+                                             styleClass="rounded-button ui-button-danger p-mr-2"
                                              icon="pi pi-trash"
                                              update="@form"
                                              process="@this"
                                              rendered="#{p:ifGranted('REMOVER')}"
                                              onclick="if (!confirm('Confirma a exclusão?'))
                                                          return false"/>
+                            <p:commandButton title="Imprimir"
+                                         icon="pi pi-print" styleClass="rounded-button ui-button-help"
+                                         action="#{controleProfessor.imprimeProfessor(obj.id)}"
+                                         ajax="false"
+                                         onclick="this.form.target = '_blank'"/>
                         </div>
                     </p:column>
                 </p:dataTable>
